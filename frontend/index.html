@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kick-me Lu'ra Analyzer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .hidden { display: none; }
+      .login-card {
+        border: 1px solid #2f3545;
+        background: #151925;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .login-btn {
+        display: inline-block;
+        text-decoration: none;
+        border: 0;
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        cursor: pointer;
+        background: #7c5cff;
+        color: #fff;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Lu'ra Interrupt Analyzer</h1>
+      <p>Analyze interrupt assignments for private/public logs via Warcraft Logs OAuth login.</p>
+
+      <section id="authGate" class="login-card hidden">
+        <h2>Authentication Required</h2>
+        <p>Log in with Warcraft Logs to read private reports.</p>
+        <a class="login-btn" href="/api/login">Login with Warcraft Logs</a>
+      </section>
+
+      <section id="analysisUI" class="hidden">
+        <label>WCL Report Code</label>
+        <input id="reportCode" placeholder="e.g. abc123XYZ" />
+
+        <label>Assignment Roster</label>
+        <textarea id="roster" rows="7">intstart
+Lijiangtowel Eternaldh Bettersanrr Curse
+Procapproved Calculusii Beastsong Xmartwater
+Biejblzbscnm Pasteurise Gungungun Chronivia
+Intend</textarea>
+
+        <div class="actions">
+          <button id="analyzeLast">Analyze Last Pull</button>
+          <button id="analyzeNight">Analyze Whole Night</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Results</h2>
+        <pre id="output"></pre>
+      </section>
+    </main>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
