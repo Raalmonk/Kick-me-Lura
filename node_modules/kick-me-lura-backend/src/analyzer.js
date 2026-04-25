@@ -298,10 +298,10 @@ function evaluateWave(wave, interrupts, casts, assignments, rowInstanceMap) {
   return { findings, timeline };
 }
 
-export async function analyzeReport({ reportCode, rosterText, lastPullOnly = true }) {
+export async function analyzeReport({ reportCode, rosterText, lastPullOnly = true, accessToken }) {
   const rosterRows = parseRoster(rosterText);
 
-  const reportData = await wclGraphql(REPORT_FIGHTS_AND_ACTORS, { code: reportCode });
+  const reportData = await wclGraphql(accessToken, REPORT_FIGHTS_AND_ACTORS, { code: reportCode });
   const report = reportData.reportData.report;
 
   const luraFights = (report.fights || []).filter((f) => /lu'?ra/i.test(f.name || ''));
@@ -325,7 +325,7 @@ export async function analyzeReport({ reportCode, rosterText, lastPullOnly = tru
   for (const fight of selectedFights) {
     const fightID = fight.id;
 
-    const playerInfo = await wclGraphql(PLAYER_INFO_IN_FIGHT, {
+    const playerInfo = await wclGraphql(accessToken, PLAYER_INFO_IN_FIGHT, {
       code: reportCode,
       fightIDs: [fightID]
     });
@@ -333,7 +333,7 @@ export async function analyzeReport({ reportCode, rosterText, lastPullOnly = tru
     const classMap = extractClasses(playerInfo.reportData.report.playerDetails);
     const assignments = buildAssignmentMetadata(rosterRows, classMap);
 
-    const eventsResp = await wclGraphql(INTERRUPT_AND_CAST_EVENTS, {
+    const eventsResp = await wclGraphql(accessToken, INTERRUPT_AND_CAST_EVENTS, {
       code: reportCode,
       startTime: fight.startTime,
       endTime: fight.endTime
