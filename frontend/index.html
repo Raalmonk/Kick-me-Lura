@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kick-me Lu'ra Analyzer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Lu'ra Interrupt Analyzer</h1>
+      <p>Paste assignment roster + WCL report code, then analyze last pull or full night.</p>
+
+      <label>WCL Report Code</label>
+      <input id="reportCode" placeholder="e.g. abc123XYZ" />
+
+      <label>Assignment Roster</label>
+      <textarea id="roster" rows="7">intstart
+Lijiangtowel Eternaldh Bettersanrr Curse
+Procapproved Calculusii Beastsong Xmartwater
+Biejblzbscnm Pasteurise Gungungun Chronivia
+Intend</textarea>
+
+      <div class="actions">
+        <button id="analyzeLast">Analyze Last Pull</button>
+        <button id="analyzeNight">Analyze Whole Night</button>
+      </div>
+
+      <section>
+        <h2>Results</h2>
+        <pre id="output"></pre>
+      </section>
+    </main>
+
+    <script src="./main.js"></script>
+  </body>
+</html>

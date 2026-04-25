@@ -1,0 +1,12 @@
+{
+  "name": "kick-me-lura",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm --workspace backend run dev",
+    "start": "npm --workspace backend run start"
+  }
+}
