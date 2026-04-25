@@ -1,16 +1,6 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const TOKEN_URL = 'https://www.warcraftlogs.com/oauth/token';
 const GRAPHQL_URL = 'https://www.warcraftlogs.com/api/v2/client';
 
-let tokenCache = {
-  accessToken: null,
-  expiresAt: 0
-};
-
-async function fetchAccessToken() {
+export async function exchangeAuthorizationCodeForToken(code, redirectUri) {
   const clientId = process.env.WCL_CLIENT_ID;
   const clientSecret = process.env.WCL_CLIENT_SECRET;
 
@@ -18,41 +8,37 @@ async function fetchAccessToken() {
     throw new Error('Missing WCL_CLIENT_ID or WCL_CLIENT_SECRET in environment variables.');
   }
 
-  const now = Date.now();
-  if (tokenCache.accessToken && tokenCache.expiresAt > now + 30_000) {
-    return tokenCache.accessToken;
-  }
-
-  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-  const response = await fetch(TOKEN_URL, {
+  const response = await fetch('https://www.warcraftlogs.com/oauth/token', {
     method: 'POST',
     headers: {
-      Authorization: `Basic ${basic}`,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: 'grant_type=client_credentials'
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri
+    })
   });
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`OAuth token request failed: ${response.status} ${text}`);
+    throw new Error(`OAuth token exchange failed: ${response.status} ${text}`);
   }
 
-  const json = await response.json();
-  tokenCache = {
-    accessToken: json.access_token,
-    expiresAt: now + (json.expires_in || 3600) * 1000
-  };
-
-  return tokenCache.accessToken;
+  return response.json();
 }
 
-export async function wclGraphql(query, variables = {}) {
-  const token = await fetchAccessToken();
+export async function wclGraphql(accessToken, query, variables = {}) {
+  if (!accessToken) {
+    throw new Error('Missing user access token.');
+  }
+
   const response = await fetch(GRAPHQL_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ query, variables })
@@ -62,5 +48,6 @@ export async function wclGraphql(query, variables = {}) {
   if (!response.ok || json.errors) {
     throw new Error(`GraphQL request failed: ${response.status} ${JSON.stringify(json.errors || json)}`);
   }
+
   return json.data;
 }
