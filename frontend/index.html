@@ -11,20 +11,28 @@
       <h1>Lu'ra Interrupt Analyzer</h1>
       <p>Paste assignment roster + WCL report code, then analyze last pull or full night.</p>
 
-      <label>WCL Report Code</label>
-      <input id="reportCode" placeholder="e.g. abc123XYZ" />
+      <section id="loginSection">
+        <a href="/api/login">
+          <button id="loginButton" type="button">Login with Warcraft Logs</button>
+        </a>
+      </section>
 
-      <label>Assignment Roster</label>
-      <textarea id="roster" rows="7">intstart
+      <section id="analysisSection" hidden>
+        <label>WCL Report Code</label>
+        <input id="reportCode" placeholder="e.g. abc123XYZ" />
+
+        <label>Assignment Roster</label>
+        <textarea id="roster" rows="7">intstart
 Lijiangtowel Eternaldh Bettersanrr Curse
 Procapproved Calculusii Beastsong Xmartwater
 Biejblzbscnm Pasteurise Gungungun Chronivia
 Intend</textarea>
 
-      <div class="actions">
-        <button id="analyzeLast">Analyze Last Pull</button>
-        <button id="analyzeNight">Analyze Whole Night</button>
-      </div>
+        <div class="actions">
+          <button id="analyzeLast">Analyze Last Pull</button>
+          <button id="analyzeNight">Analyze Whole Night</button>
+        </div>
+      </section>
 
       <section>
         <h2>Results</h2>

@@ -1,4 +1,47 @@
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = '/api';
+const TOKEN_KEY = 'wcl_access_token';
+
+function getTokenFromUrl() {
+  const url = new URL(window.location.href);
+  return url.searchParams.get('token');
+}
+
+function cleanTokenFromUrl() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('token')) {
+    url.searchParams.delete('token');
+    window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+  }
+}
+
+function getStoredToken() {
+  return sessionStorage.getItem(TOKEN_KEY);
+}
+
+function setStoredToken(token) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+}
+
+function setUiAuthenticated(isAuthenticated) {
+  document.querySelector('#loginSection').hidden = isAuthenticated;
+  document.querySelector('#analysisSection').hidden = !isAuthenticated;
+
+  if (!isAuthenticated) {
+    document.querySelector('#output').textContent = 'Please log in with Warcraft Logs first.';
+  }
+}
+
+function initializeAuth() {
+  const tokenFromUrl = getTokenFromUrl();
+  if (tokenFromUrl) {
+    setStoredToken(tokenFromUrl);
+    cleanTokenFromUrl();
+  }
+
+  const token = getStoredToken();
+  setUiAuthenticated(Boolean(token));
+  return token;
+}
 
 function formatTimeline(results) {
   const lines = [];
@@ -33,15 +76,25 @@ function formatTimeline(results) {
 }
 
 async function call(endpoint) {
+  const accessToken = getStoredToken();
+  const output = document.querySelector('#output');
+
+  if (!accessToken) {
+    setUiAuthenticated(false);
+    return;
+  }
+
   const reportCode = document.querySelector('#reportCode').value.trim();
   const rosterText = document.querySelector('#roster').value;
-  const output = document.querySelector('#output');
 
   output.textContent = 'Loading...';
 
   const response = await fetch(`${API_BASE}/${endpoint}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`
+    },
     body: JSON.stringify({ reportCode, rosterText })
   });
 
@@ -53,6 +106,8 @@ async function call(endpoint) {
 
   output.textContent = formatTimeline(json);
 }
+
+initializeAuth();
 
 document.querySelector('#analyzeLast').addEventListener('click', () => call('analyze/last-pull'));
 document.querySelector('#analyzeNight').addEventListener('click', () => call('analyze/night'));
